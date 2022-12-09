@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guwen.mapper.ForgetMapper">
+
+    <!--根据userId,wordId查找遗忘记录-->
+    <select id="selectForgetRecord" resultType="String">
+        select forgetNum
+        from forget
+        where userId=#{userId} and wordId =#{wordId}
+        limit 1
+    </select>
+
+    <!--保存遗忘记录-->
+    <insert id="saveForgetRecord">
+        insert into forget(userId,wordId,forgetNum,forgetStatus)
+        values(#{userId},#{wordId},#{forgetNum},#{forgetStatus})
+    </insert>
+
+    <!--更新遗忘记录-->
+    <insert id="updateForgetRecord">
+       update forget
+       set forgetNum = #{forgetNum},forgetStatus = #{forgetStatus}
+       where userId=#{userId}
+       and wordId =#{wordId}
+    </insert>
+
+    <!--根据userId和bookId查找bookPage-->
+    <select id="selectStudyRecord" resultType="String">
+        select bookPage
+        from record
+        where userId=#{userId}
+        and bookId=#{bookId}
+        limit 1
+    </select>
+
+    <!--更新学习记录-->
+    <update id="updateStudyRecord">
+        update record
+        set bookPage = #{bookPage}
+        where userId = #{userId}
+          and bookId = #{bookId}
+    </update>
+
+    <!--保存学习记录-->
+    <insert id="saveStudyRecord">
+        insert into record
+        values(#{userId},#{bookId},#{bookPage})
+    </insert>
+
+    <!--根据userId和Date查找wordNum-->
+    <select id="selectStudyDetails" resultType="String">
+        select wordNum
+        from details
+        where userId=#{userId}
+        and date_format(studyDate,'%Y-%m-%d') = #{studyDate}
+        limit 1
+    </select>
+
+    <!--保存哪天记了多少单词-->
+    <insert id="saveStudyDetails">
+        insert into details(userId,wordNum,studyDate)
+        values(#{userId},#{wordNum},#{studyDate})
+    </insert>
+
+    <!--更新哪天记了多少单词-->
+    <update id="updateStudyDetails">
+        update details
+        set wordNum = #{wordNum}
+        where userId = #{userId}
+        and date_format(studyDate,'%Y-%m-%d') = #{studyDate}
+    </update>
+
+    <select id="SelectRequestionFromForget" resultType="com.guwen.model.Word">
+        SELECT b.wordId,b.wordName
+        FROM forget a
+        left join word b
+        on a.wordId = b.wordId
+        where a.userId = #{userId} and a.forgetStatus = 1
+        order by a.forgetNum desc,wordId
+        limit #{startPage},#{selectNum}
+    </select>
+</mapper>

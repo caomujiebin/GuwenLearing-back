@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guwen.mapper.ReviewMapper">
+
+<insert id="saveReviewWord">
+    /*insert into review(userId,wordId,firstDate,LastDate,gapDay,reviewStatus)
+    values(#{userId},#{wordId},#{firstDate},#{lastDate},#{gapDay},#{reviewStatus})*/
+    insert into review(firstDate,LastDate,gapDay,reviewStatus)
+    values(#{firstDate},#{lastDate},#{gapDay},#{reviewStatus})
+</insert>
+
+    <select id="selectByUserIdAndWordId" resultType="com.guwen.model.Review">
+        select firstDate
+        from review
+        where userId = #{userId}
+        and wordId = #{wordId}
+        limit 1
+    </select>
+
+    <update id="updateByUserIdAndWordId">
+        update review
+        set lastDate = #{lastDate},gapDay = #{gapDay}
+        where userId = #{userId}
+        and wordId = #{wordId}
+    </update>
+
+    <update id="updateBetweenDay">
+        update review
+        set betweenDay = betweenDay +1
+    </update>
+
+    <select id="selectNotReadEmail" resultType="com.guwen.model.Dto.ReviewDto">
+        select u.userId,u.userName,u.email,u.newWordsNum,count(1) as reviewWordsNum
+        from user u
+        left join review r
+        on r.userId = u.userId
+        where u.userId not in(
+            select distinct d.userId
+            from details d
+            where DATEDIFF(d.studyDate,NOW()) =0)
+        and r.reviewStatus='1' and u.emailNotify ='1'
+        and r.betweenDay in (1,3,7,15)
+        group by u.userId
+    </select>
+
+    <select id="selectStudyWords" resultType="com.guwen.model.User">
+        select u.userId,u.newWordsNum,count(1) as reviewWordsNum
+        from user u
+        left join review r
+        on r.userId = u.userId
+        where r.reviewStatus='1'
+          and r.betweenDay in (1,3,7,15)
+          and u.userId = #{userId}
+        group by u.userId
+    </select>
+
+    <select id="SelectRequestionFromReview" resultType="com.guwen.model.Word">
+        SELECT b.wordId,b.wordName
+        FROM review a
+        left join word b
+        on a.wordId = b.wordId
+        where a.userId = #{userId} and a.reviewStatus = 1
+        and a.betweenDay in(1,3,7,15)
+        order by a.betweenDay
+        limit #{startPage},#{selectNum}
+    </select>
+</mapper>

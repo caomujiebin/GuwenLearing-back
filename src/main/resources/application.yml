@@ -1,0 +1,13 @@
+## Mybatis-plus配置
+mybatis-plus:
+  type-enums-package: com.guwen.model
+  global-config:
+    db-config:
+      update-strategy: not_empty
+  #配置Mapper映射文件
+  mapper-locations: classpath*:/mapper/*.xml
+  # 配置MyBatis数据返回类型别名（默认别名是类名）
+  type-aliases-package: com.guwen.model
+  configuration:
+    # 自动驼峰命名
+    map-underscore-to-camel-case: false

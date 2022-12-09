@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guwen.mapper.StudyMapper">
+
+    <select id="startRecordPage" resultType="String">
+    select bookPage
+    from record
+    where userId =#{userId}
+          and bookId = #{bookId}
+          limit 1
+    </select>
+    <insert id="insertRecord">
+        insert into record values(#{userId},#{bookId},#{bookPage})
+    </insert>
+
+    <select id="SelectRequestion" resultType="com.guwen.model.Word">
+         select *
+         from word
+         where bookId=#{bookId}
+         limit #{startPage},#{selectNum}
+
+    </select>
+
+    <select id="selectByWordId" resultType="com.guwen.model.Explain">
+        select *
+        from explains
+        where wordId=#{wordId}
+        group by wordId,wordExplain
+    </select>
+
+    <select id="selectOtherExplain" resultType="com.guwen.model.Explain">
+        SELECT * FROM explains ORDER BY RAND() LIMIT 4
+    </select>
+
+    <select id="everyStudyRecord" resultType="com.guwen.model.Dto.DetailDto">
+        select month(studyDate) as month,day(studyDate) as day,wordNum,reviewNum
+        from details
+        where userId =#{userId}
+        and year(studyDate) = #{year}
+    </select>
+
+    <select id="selectAllWord" resultType="com.guwen.model.Content">
+        SELECT w.wordId,w.wordName,e.wordExplain,e.wordSentence,e.wordInBook,e.wordType
+        FROM word w
+        left join `explains` e
+        on w.wordId = e.wordId
+    </select>
+</mapper>

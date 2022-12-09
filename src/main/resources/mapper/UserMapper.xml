@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guwen.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+<!--    <resultMap id="UserMap" type="com.guwen.model.User">
+        <id column="userId" property="userId" />
+        <result column="email" property="email" />
+        <result column="password" property="password" />
+    </resultMap>-->
+
+    <!-- 登录 -->
+    <select id="login" resultType="com.guwen.model.User">
+        select *
+        from user
+        where email=#{email} and password=#{password}
+        limit 1
+    </select>
+
+    <!-- 查询重复邮箱 -->
+    <select id="hasEmail" resultType="String">
+        select password
+        from user
+        where email=#{email}
+            limit 1
+    </select>
+
+    <!--注册-->
+    <insert id="insertUser" parameterType="com.guwen.model.User">
+        insert into user(userName,email,password,headPicture,emailNotify,newWordsNum,reviewWordsNum)
+        value (#{userName},#{email},#{password},#{headPicture},#{emailNotify},#{newWordsNum},#{reviewWordsNum})
+    </insert>
+
+    <!--更改个人信息-->
+    <update id="saveInformation">
+        update user
+        set userName=#{userName},
+            email =#{email},
+            password=#{password},
+            resume=#{resume},
+            sex=#{sex},
+            phoneNumber=#{phoneNumber},
+            address=#{address},
+            identity=#{identity}
+            where userId = #{userId}
+    </update>
+
+    <!--根据userId查找邮箱和密码-->
+    <select id="findEmailByUserId" resultType="com.guwen.model.User">
+        select email,password
+        from User
+        where userId =#{userId}
+        limit 1
+    </select>
+
+    <!--通过userId更新密码-->
+    <update id="updatePassword">
+        update user
+        set password=#{password}
+        where userId = #{userId}
+    </update>
+
+    <!--上传头像-->
+    <update id="uploadHeadPicture">
+        update user
+        set headPicture = #{headPicture}
+        where userId =#{userId}
+    </update>
+
+    <!--更改系统设置-->
+    <update id="saveSetting">
+        update user
+        set emailNotify=#{emailNotify},
+            newWordsNum=#{newWordsNum},
+            reviewWordsNum=#{reviewWordsNum}
+            where userId = #{userId}
+    </update>
+</mapper>
