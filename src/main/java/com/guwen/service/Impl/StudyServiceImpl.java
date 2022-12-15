@@ -53,10 +53,14 @@ public class StudyServiceImpl implements StudyService {
         }
         User user = reviewMapper.selectStudyWords(study.getUserId());
 
-        int wordsNum = study.getStudyType() ==2?user.getReviewWordsNum():user.getNewWordsNum();
+        int wordsNum = study.getStudyType() ==2?user ==null ?0:user.getReviewWordsNum():user ==null ?0:user.getNewWordsNum();
         int startPage=study.getStudyType() ==1?Integer.parseInt(startFromPage):0;
         int selectNum = wordsNum/2+1;//选择题数量
         int lineNum = wordsNum-selectNum;//连线题数量
+        if(lineNum <0){
+            lineNum =0;
+            wordsNum = selectNum;
+        }
         int singleNum=selectNum/2+1;//单选题数量
         //int multiNum = selectNum-singleNum;//多选题数量
 
